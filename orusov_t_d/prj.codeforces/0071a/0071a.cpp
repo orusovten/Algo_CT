@@ -1,3 +1,5 @@
+// Простая задача
+
 #include <iostream>
  
 void cut_to_abbreviation(const std::string& str) {
