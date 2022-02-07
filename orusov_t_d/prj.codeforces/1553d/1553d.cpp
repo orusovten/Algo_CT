@@ -1,3 +1,5 @@
+// Средняя задача
+
 #include <iostream>
 
 int main() {
