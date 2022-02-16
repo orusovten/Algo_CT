@@ -5,13 +5,12 @@
 class NullDenomException : public std::exception {
 };
 
-
 class Rational {
 public:
 	Rational() = default;
 	Rational(const Rational& other) = default;
 	Rational(Rational&& other) = default;
-	Rational(long long _numerator, long long _denominator = 1) :
+	Rational(int _numerator, int _denominator = 1) :
 		numerator(_numerator), denominator(_denominator) {
 		// check that denominator > 0 and nod(num, den) == 1
 		if (denominator == 0) {
