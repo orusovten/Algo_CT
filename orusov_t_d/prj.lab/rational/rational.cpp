@@ -25,8 +25,8 @@ public:
 	~Rational() = default;
 	friend bool operator< (const Rational& left, const Rational& right);
 	friend bool operator== (const Rational& left, const Rational& right);
-	Rational& operator= (const Rational& other);
-	Rational& operator= (Rational&& other) noexcept;
+	Rational& operator= (const Rational& other) = default;
+	Rational& operator= (Rational&& other) noexcept = default;
 	Rational operator-() const;
 	Rational operator+() const;
 	Rational& operator+= (const Rational& other);
@@ -41,22 +41,6 @@ private:
 	int numerator = 0; // числитель
 	int denominator = 1; // знаменатель, натуральное число
 };
-
-Rational& Rational::operator=(const Rational& other) {
-	if (this == &other)
-		return *this;
-	numerator = other.numerator;
-	denominator = other.denominator;
-	return *this;
-}
-
-Rational& Rational::operator=(Rational&& other) noexcept{
-	if (this == &other)
-		return *this;
-	numerator = other.numerator;
-	denominator = other.denominator;
-	return *this;
-}
 
 int Rational::GCD(int left, int right) const {
 	left = left < 0 ? -left : left;
@@ -148,6 +132,9 @@ Rational& Rational::operator*= (const Rational& other) {
 }
 
 Rational& Rational::operator/= (const Rational& other) {
+	if (other.numerator == 0) {
+		throw NullDenomException();
+	}
 	numerator *= other.denominator;
 	denominator *= other.numerator;
 	balance();
