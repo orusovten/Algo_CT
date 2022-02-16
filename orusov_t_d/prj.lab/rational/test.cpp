@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest.h>
-#include <rational.cpp>
+#include "doctest.h"
+#include "rational.cpp"
 #include <random>
 
 TEST_CASE("create") {
