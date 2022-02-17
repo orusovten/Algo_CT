@@ -1,46 +1,17 @@
-#include <iostream>
-#include <exception>
-#include <string>
+#include "rational.h"
 
-class NullDenomException : public std::exception {
-};
-
-class Rational {
-public:
-	Rational() = default;
-	Rational(const Rational& other) = default;
-	Rational(Rational&& other) = default;
-	Rational(int _numerator, int _denominator = 1) :
-		numerator(_numerator), denominator(_denominator) {
-		// check that denominator > 0 and nod(num, den) == 1
-		if (denominator == 0) {
-			throw NullDenomException();
-		}
-		if (denominator < 0) {
-			denominator *= -1;
-			numerator *= -1;
-		}
-		balance();
+Rational::Rational(int numerator, int denominator = 1) :
+	numerator_(numerator), denominator_(denominator) {
+	// check that denominator > 0 and nod(num, den) == 1
+	if (denominator_ == 0) {
+		throw NullDenomException();
 	}
-	~Rational() = default;
-	friend bool operator< (const Rational& left, const Rational& right);
-	friend bool operator== (const Rational& left, const Rational& right);
-	Rational& operator= (const Rational& other) = default;
-	Rational& operator= (Rational&& other) noexcept = default;
-	Rational operator-() const;
-	Rational operator+() const;
-	Rational& operator+= (const Rational& other);
-	Rational& operator-= (const Rational& other);
-	Rational& operator*= (const Rational& other);
-	Rational& operator/= (const Rational& other);
-	std::string toString() const;
-private:
-	int GCD(int left, int right) const; // поиск НОД
-	void balance(); // приводит дробь к несократимому виду
-private:
-	int numerator = 0; // числитель
-	int denominator = 1; // знаменатель, натуральное число
-};
+	if (denominator_ < 0) {
+		denominator_ *= -1;
+		numerator_ *= -1;
+	}
+	Balance();
+}
 
 int Rational::GCD(int left, int right) const {
 	left = left < 0 ? -left : left;
@@ -48,22 +19,28 @@ int Rational::GCD(int left, int right) const {
 	while (left != 0 && right != 0) {
 		if (left > right) {
 			left %= right;
-		}
-		else {
+		} else {
 			right %= left;
 		}
 	}
 	return right + left;
 }
 
+int Rational::GetNumerator() const {
+	return numerator_;
+}
+int Rational::GetDenominator() const {
+	return denominator_;
+}
+
 bool operator< (const Rational& left, const Rational& right) {
-	if (left.denominator == right.denominator) {
-		return left.numerator < right.numerator;
+	if (left.GetDenominator() == right.GetDenominator()) {
+		return left.GetNumerator() < right.GetNumerator();
 	}
-	return left.numerator * right.denominator < left.denominator * right.numerator;
+	return left.GetNumerator() * right.GetDenominator() < left.GetDenominator() * right.GetNumerator();
 }
 bool operator== (const Rational& left, const Rational& right) {
-	return left.numerator == right.numerator && left.denominator == right.denominator;
+	return left.GetNumerator() == right.GetNumerator() && left.GetDenominator() == right.GetDenominator();
 }
 bool operator!= (const Rational& left, const Rational& right) {
 	return !(left == right);
@@ -78,11 +55,11 @@ bool operator> (const Rational& left, const Rational& right) {
 	return (left != right) && (left >= right);
 }
 
-void Rational::balance() {
-	int gcd = GCD(denominator, numerator);
+void Rational::Balance() {
+	int gcd = GCD(denominator_, numerator_);
 	if (gcd != 1) {
-		denominator /= gcd;
-		numerator /= gcd;
+		denominator_ /= gcd;
+		numerator_ /= gcd;
 	}
 }
 
@@ -91,7 +68,7 @@ Rational Rational::operator+() const {
 }
 
 Rational Rational::operator-() const {
-	return Rational(-numerator, denominator);
+	return Rational(-numerator_, denominator_);
 }
 
 const Rational operator+ (const Rational& left, const Rational& right) {
@@ -111,55 +88,57 @@ const Rational operator/ (const Rational& left, const Rational& right) {
 }
 
 Rational& Rational::operator+= (const Rational& other) {
-	numerator = numerator * other.denominator + other.numerator * denominator;
-	denominator *= other.denominator;
-	balance();
+	numerator_ = numerator_ * other.denominator_ + other.numerator_ * denominator_;
+	denominator_ *= other.denominator_;
+	Balance();
 	return *this;
 }
 
 Rational& Rational::operator-= (const Rational& other) {
-	numerator = numerator * other.denominator - other.numerator * denominator;
-	denominator *= other.denominator;
-	balance();
+	numerator_ = numerator_ * other.denominator_ - other.numerator_ * denominator_;
+	denominator_ *= other.denominator_;
+	Balance();
 	return *this;
 }
 
 Rational& Rational::operator*= (const Rational& other) {
-	numerator *= other.numerator;
-	denominator *= other.denominator;
-	balance();
+	numerator_ *= other.numerator_;
+	denominator_ *= other.denominator_;
+	Balance();
 	return *this;
 }
 
 Rational& Rational::operator/= (const Rational& other) {
-	if (other.numerator == 0) {
+	if (other.numerator_ == 0) {
 		throw NullDenomException();
 	}
-	numerator *= other.denominator;
-	denominator *= other.numerator;
-	balance();
+	numerator_ *= other.denominator_;
+	denominator_ *= other.numerator_;
+	Balance();
 	return *this;
 }
 
-std::string Rational::toString() const {
+std::string Rational::ToString() const {
 	std::string str;
-	str.append(std::to_string(numerator));
-	if (denominator != 1) {
-		str += "/" + std::to_string(denominator);
-	}
+	str.append(std::to_string(numerator_));
+	str += "/" + std::to_string(denominator_);
+	// std::cout << str << std::endl;
 	return str;
 }
 
 std::ostream& operator<< (std::ostream& out, const Rational& rational) {
-	out << rational.toString();
+	out << rational.ToString();
 	return out;
 }
 
 std::istream& operator>> (std::istream& in, Rational& rational) {
+	char c;
 	int numerator;
 	int denominator;
-	in >> numerator;
-	in >> denominator;
+	in >> numerator >> std::noskipws >> c >> std::skipws >> denominator;
+	if (c != '/') {
+		throw Rational::InvalidInputException();
+	}
 	rational = Rational(numerator, denominator);
 	return in;
 }
