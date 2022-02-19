@@ -23,24 +23,29 @@ public:
 	Rational& operator*= (const Rational& other);
 	Rational& operator/= (const Rational& other);
 
-    int GetNumerator() const;
-    int GetDenominator() const;
+	bool operator< (const Rational& other) const;
+	bool operator== (const Rational& other) const;
+	bool operator!= (const Rational& other) const;
+	bool operator<= (const Rational& other) const;
+	bool operator>= (const Rational& other) const;
+	bool operator> (const Rational& other) const;
 
-	std::string ToString() const;
+    int num() const;
+    int denum() const;
+
+	std::ostream& write_to(std::ostream& ostrm) const;
+	std::istream& read_from(std::istream& istrm);
 private:
+	std::string to_string() const;
 	int GCD(int left, int right) const; // поиск НОД
-	void Balance(); // приводит дробь к несократимому виду
+	void balance(); // приводит дробь к несократимому виду
 private:
 	int numerator_ = 0; // числитель
 	int denominator_ = 1; // знаменатель, натуральное число
 };
 
-bool operator< (const Rational& left, const Rational& right);
-bool operator== (const Rational& left, const Rational& right);
-bool operator!= (const Rational& left, const Rational& right);
-bool operator<= (const Rational& left, const Rational& right);
-bool operator>= (const Rational& left, const Rational& right);
-bool operator> (const Rational& left, const Rational& right);
+std::ostream& operator<< (std::ostream& out, const Rational& rational);
+std::istream& operator>> (std::istream& in, Rational& rational);
 
 const Rational operator+ (const Rational& left, const Rational& right);
 const Rational operator* (const Rational& left, const Rational& right);
