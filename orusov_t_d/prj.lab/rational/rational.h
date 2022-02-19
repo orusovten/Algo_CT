@@ -5,7 +5,7 @@
 class Rational {
 public:
 	class NullDenomException : public std::exception {};
-    class InvalidInputException : public std::exception {};
+	class InvalidInputException : public std::exception {};
 	Rational() = default;
 	Rational(const Rational& other) = default;
 	Rational(Rational&& other) = default;
@@ -30,8 +30,8 @@ public:
 	bool operator>= (const Rational& other) const;
 	bool operator> (const Rational& other) const;
 
-    int num() const;
-    int denum() const;
+	int num() const;
+	int denum() const;
 
 	std::ostream& write_to(std::ostream& ostrm) const;
 	std::istream& read_from(std::istream& istrm);
