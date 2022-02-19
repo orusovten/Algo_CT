@@ -10,7 +10,7 @@ Rational::Rational(int numerator, int denominator = 1) :
 		denominator_ *= -1;
 		numerator_ *= -1;
 	}
-	Balance();
+	balance();
 }
 
 int Rational::GCD(int left, int right) const {
@@ -26,36 +26,36 @@ int Rational::GCD(int left, int right) const {
 	return right + left;
 }
 
-int Rational::GetNumerator() const {
+int Rational::num() const {
 	return numerator_;
 }
-int Rational::GetDenominator() const {
+int Rational::denum() const {
 	return denominator_;
 }
 
-bool operator< (const Rational& left, const Rational& right) {
-	if (left.GetDenominator() == right.GetDenominator()) {
-		return left.GetNumerator() < right.GetNumerator();
+bool Rational::operator< (const Rational& other) const {
+	if (denominator_ == other.denominator_) {
+		return numerator_ < other.numerator_;
 	}
-	return left.GetNumerator() * right.GetDenominator() < left.GetDenominator() * right.GetNumerator();
+	return numerator_ * other.denominator_ < denominator_ * other.numerator_;
 }
-bool operator== (const Rational& left, const Rational& right) {
-	return left.GetNumerator() == right.GetNumerator() && left.GetDenominator() == right.GetDenominator();
+bool Rational::operator== (const Rational& other) const {
+	return numerator_ == other.numerator_ && denominator_ == other.denominator_;
 }
-bool operator!= (const Rational& left, const Rational& right) {
-	return !(left == right);
+bool Rational::operator!= (const Rational& other) const {
+	return !(*this == other);
 }
-bool operator<= (const Rational& left, const Rational& right) {
-	return (left < right) || (left == right);
+bool Rational::operator<= (const Rational& other) const {
+	return (*this < other) || (*this == other);
 }
-bool operator>= (const Rational& left, const Rational& right) {
-	return !(left < right);
+bool Rational::operator>= (const Rational& other) const {
+	return !(*this < other);
 }
-bool operator> (const Rational& left, const Rational& right) {
-	return (left != right) && (left >= right);
+bool Rational::operator> (const Rational& other) const {
+	return (*this != other) && (*this >= other);
 }
 
-void Rational::Balance() {
+void Rational::balance() {
 	int gcd = GCD(denominator_, numerator_);
 	if (gcd != 1) {
 		denominator_ /= gcd;
@@ -90,21 +90,21 @@ const Rational operator/ (const Rational& left, const Rational& right) {
 Rational& Rational::operator+= (const Rational& other) {
 	numerator_ = numerator_ * other.denominator_ + other.numerator_ * denominator_;
 	denominator_ *= other.denominator_;
-	Balance();
+	balance();
 	return *this;
 }
 
 Rational& Rational::operator-= (const Rational& other) {
 	numerator_ = numerator_ * other.denominator_ - other.numerator_ * denominator_;
 	denominator_ *= other.denominator_;
-	Balance();
+	balance();
 	return *this;
 }
 
 Rational& Rational::operator*= (const Rational& other) {
 	numerator_ *= other.numerator_;
 	denominator_ *= other.denominator_;
-	Balance();
+	balance();
 	return *this;
 }
 
@@ -114,31 +114,36 @@ Rational& Rational::operator/= (const Rational& other) {
 	}
 	numerator_ *= other.denominator_;
 	denominator_ *= other.numerator_;
-	Balance();
+	balance();
 	return *this;
 }
 
-std::string Rational::ToString() const {
-	std::string str;
-	str.append(std::to_string(numerator_));
-	str += "/" + std::to_string(denominator_);
-	// std::cout << str << std::endl;
+std::string Rational::to_string() const {
+	std::string str = std::to_string(numerator_) + "/" + std::to_string(denominator_);
 	return str;
 }
 
-std::ostream& operator<< (std::ostream& out, const Rational& rational) {
-	out << rational.ToString();
-	return out;
+std::ostream& Rational::write_to(std::ostream& ostrm) const {
+	ostrm << to_string();
+	return ostrm;
 }
 
-std::istream& operator>> (std::istream& in, Rational& rational) {
+std::istream& Rational::read_from(std::istream& istrm) {
 	char c;
 	int numerator;
 	int denominator;
-	in >> numerator >> std::noskipws >> c >> std::skipws >> denominator;
+	istrm >> numerator >> std::noskipws >> c >> std::skipws >> denominator;
 	if (c != '/') {
 		throw Rational::InvalidInputException();
 	}
-	rational = Rational(numerator, denominator);
-	return in;
+	*this = Rational(numerator, denominator);
+	return istrm;
+}
+
+std::ostream& operator<< (std::ostream& out, const Rational& rational) {
+	return rational.write_to(out);
+}
+
+std::istream& operator>> (std::istream& in, Rational& rational) {
+	return rational.read_from(in);
 }
