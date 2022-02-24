@@ -4,4 +4,4 @@ set(CMAKE_CXX_STANDARD 20)
 project(orusov_project_SE)
 
 add_subdirectory(prj.lab)
-include_directories(prj.lab/parts prj.lab)
+include_directories(prj.parts prj.lab)
