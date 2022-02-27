@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-#include "rational.cpp"
+#include <doctest/doctest.h>
+#include <rational/rational.h>
 #include <random>
 #include <sstream>
 
