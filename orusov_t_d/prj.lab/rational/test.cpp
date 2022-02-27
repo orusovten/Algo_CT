@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-#include <rational/rational.h>
+#include "doctest.h"
+#include "rational.cpp"
 #include <random>
 #include <sstream>
 
@@ -27,8 +27,8 @@ TEST_CASE("comparison operations") {
 
 TEST_CASE("zero case") {
     Rational default_number;
-    CHECK(default_number.GetNumerator() == 0);
-    CHECK(default_number.GetDenominator() == 1);
+    CHECK(default_number.num() == 0);
+    CHECK(default_number.denum() == 1);
     Rational zero_number(0, 3);
     CHECK(zero_number == default_number);
 }
