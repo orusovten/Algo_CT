@@ -43,7 +43,7 @@ M3i::M3i(const il3int& list) {
     }
 }
 
-M3i::~M3i() {
+void M3i::clear() {
     for (int i = 0; i < d1_; ++i) {
         for (int j = 0; j < d2_; ++j) {
             delete[] arr_[i][j];
@@ -51,6 +51,28 @@ M3i::~M3i() {
         delete[] arr_[i];
     }
     delete[] arr_;
+}
+
+M3i::M3i(M3i&& other): 
+    arr_(other.arr_), d1_(other.d1_), d2_(other.d2_), d3_(other.d3_) {
+    other.arr_ = nullptr;
+}
+
+M3i& M3i::operator=(M3i&& other) {
+    if (this == &other) {
+        return *this;
+    }
+    clear();
+    arr_ = other.arr_;
+    other.arr_ = nullptr;
+    d1_ = other.d1_;
+    d2_ = other.d2_;
+    d3_ = other.d3_;
+    return *this;
+}
+
+M3i::~M3i() {
+    clear();
 }
 
 int& M3i::at(int i, int j, int k) {
