@@ -13,8 +13,8 @@ public:
     // легкая копия(подсчет ссылок)
     M3i& operator=(const M3i&);
 
-    M3i(M3i&&);
-    M3i& operator=(M3i&&);
+    M3i(M3i&& other); // done
+    M3i& operator=(M3i&& other); // done
 
     ~M3i(); // done
     
@@ -33,6 +33,7 @@ public:
     void fill(int val); // done
 private:
     void initialize();
+    void clear();
     int*** arr_;
     int d1_;
     int d2_;
