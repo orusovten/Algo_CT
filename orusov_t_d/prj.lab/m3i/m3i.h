@@ -9,12 +9,12 @@ public:
     // мой вариант конструктора от std::initializer_list
     M3i(const il3int& list); // done
     // легкая копия(подсчет ссылок)
-    M3i(const M3i&);
+    M3i(const M3i& other); // done, but questions
     // легкая копия(подсчет ссылок)
-    M3i& operator=(const M3i&);
+    M3i& operator=(const M3i& other); // done, but questions
 
-    M3i(M3i&& other); // done
-    M3i& operator=(M3i&& other); // done
+    M3i(M3i&& other); // done, but questions
+    M3i& operator=(M3i&& other); // done, but questions
 
     ~M3i(); // done
     
@@ -32,12 +32,13 @@ public:
     // заполнение значениями
     void fill(int val); // done
 private:
-    void initialize();
-    void clear();
-    int*** arr_;
-    int d1_;
-    int d2_;
-    int d3_;
+    void initialize(int*** arr, int d1, int d2, int d3); // заполнение arr значениями по умолчанию
+    void clear(); // очистка данных
+    int*** arr_; // буфер
+    int* d1_; // измерение 1
+    int* d2_; // измерение 2
+    int* d3_; // измерение 3
+    int* count_; // кол-во ссылок
 };
 
 std::istream& operator>>(std::istream& istrm, M3i& m);
