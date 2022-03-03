@@ -1,14 +1,19 @@
-#include <iostream>
-#include <string>
+#pragma once
+#ifndef RATIONAL_RATIONAL_HEAD_H_2022_03_03
+#define RATIONAL_RATIONAL_HEAD_H_2022_03_03
 
+#include <string>
+#include <exception>
+#include <iosfwd>
 
 class Rational {
 public:
-	class NullDenomException : public std::exception {};
-	class InvalidInputException : public std::exception {};
+    class NullDenomException : public std::exception {};
+    class InvalidInputException : public std::exception {};
 	Rational() = default;
 	Rational(const Rational& other) = default;
 	Rational(Rational&& other) = default;
+	Rational(int numerator);
 	Rational(int numerator, int denominator);
 	~Rational() = default;
 
@@ -31,7 +36,7 @@ public:
 	bool operator> (const Rational& other) const;
 
 	int num() const;
-	int denum() const;
+    int denum() const;
 
 	std::ostream& write_to(std::ostream& ostrm) const;
 	std::istream& read_from(std::istream& istrm);
@@ -51,3 +56,5 @@ const Rational operator+ (const Rational& left, const Rational& right);
 const Rational operator* (const Rational& left, const Rational& right);
 const Rational operator- (const Rational& left, const Rational& right);
 const Rational operator/ (const Rational& left, const Rational& right);
+
+#endif // #define RATIONAL_RATIONAL_HEAD_H_2022_03_03
