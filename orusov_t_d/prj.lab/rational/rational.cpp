@@ -1,4 +1,8 @@
-#include "rational.h"
+#include <rational/rational.h>
+#include <iostream>
+
+Rational::Rational(int numerator):
+	numerator_(numerator), denominator_(1) {}
 
 Rational::Rational(int numerator, int denominator = 1) :
 	numerator_(numerator), denominator_(denominator) {
