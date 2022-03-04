@@ -137,7 +137,7 @@ std::istream& Rational::read_from(std::istream& istrm) {
 	int numerator;
 	int denominator;
 	istrm >> numerator >> std::noskipws >> c >> std::skipws >> denominator;
-	if (c != '/') {
+	if (c != '/' || denominator <= 0) {
 		throw Rational::InvalidInputException();
 	}
 	*this = Rational(numerator, denominator);
