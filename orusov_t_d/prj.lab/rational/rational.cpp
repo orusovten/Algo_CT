@@ -10,10 +10,6 @@ Rational::Rational(int numerator, int denominator = 1) :
 	if (denominator_ == 0) {
 		throw NullDenomException();
 	}
-	if (denominator_ < 0) {
-		denominator_ *= -1;
-		numerator_ *= -1;
-	}
 	balance();
 }
 
@@ -64,6 +60,10 @@ void Rational::balance() {
 	if (gcd != 1) {
 		denominator_ /= gcd;
 		numerator_ /= gcd;
+	}
+	if (denominator_ < 0) {
+		denominator_ *= -1;
+		numerator_ *= -1;
 	}
 }
 
