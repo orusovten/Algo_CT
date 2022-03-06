@@ -1,8 +1,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <string>
-#include "doctest.h"
-#include "m3i.cpp"
+#include <doctest/doctest.h>
+#include <m3i/m3i.h>
 
 using namespace details;
 
