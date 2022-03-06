@@ -1,10 +1,20 @@
-#include "m3i.h"
+#include <m3i/m3i.h>
+#include <stdexcept>
+
+using namespace details;
+
+typedef std::lock_guard<std::mutex> LockGuardMutex;
 
 int min(int a, int b) {
     return a < b ? a : b;
 }
 
-void M3i::initialize(int*** arr, int d1, int d2, int d3) {
+M3iImpl::M3iImpl():
+    ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
+{
+}
+
+void M3iImpl::Initialize(int***& arr, int d1, int d2, int d3) {
     arr = new int**[d1];
     for (int i = 0; i < d1; ++i) {
         arr[i] = new int*[d2];
@@ -17,18 +27,18 @@ void M3i::initialize(int*** arr, int d1, int d2, int d3) {
     }
 }
 
-M3i::M3i(int d1, int d2, int d3): 
-    d1_(new int(d1)), d2_(new int(d2)), d3_(new int(d3)), count_(new int(1))
+M3iImpl::M3iImpl(int d1, int d2, int d3): 
+    ptr_(new SharedPtr(nullptr, d1, d2, d3, 1))
 {
-    initialize(arr_, *d1_, *d2_, *d3_);
+    Initialize(ptr_->arr, ptr_->d1, ptr_->d2, ptr_->d3);
 }
 
-M3i::M3i(const il3int& list) {
-    d1_ = new int(list.size());
-    d2_ = new int (list.begin()->size());
-    d3_ = new int(list.begin()->begin()->size());
-    count_ = new int(1);
-    initialize(arr_, *d1_, *d2_, *d3_);
+M3iImpl::M3iImpl(const il3int& list): ptr_(new SharedPtr(nullptr, 0, 0, 0, 0)) {
+    ptr_->d1 = list.size();
+    ptr_->d2 = list.begin()->size();
+    ptr_->d3 = list.begin()->begin()->size();
+    ptr_->count = 1;
+    Initialize(ptr_->arr, ptr_->d1, ptr_->d2, ptr_->d3);
     int i = 0;
     int j = 0;
     int k = 0;
@@ -37,7 +47,7 @@ M3i::M3i(const il3int& list) {
         for (const auto& subsublist: sublist) {
             k = 0;
             for (const auto& elem: subsublist) {
-                arr_[i][j][k] = elem;
+                ptr_->arr[i][j][k] = elem;
                 ++k;
             }
             ++j;
@@ -46,139 +56,209 @@ M3i::M3i(const il3int& list) {
     }
 }
 
-void M3i::clear() {
-    for (int i = 0; i < *d1_; ++i) {
-        for (int j = 0; j < *d2_; ++j) {
-            delete[] arr_[i][j];
+void M3iImpl::Clear() {
+    for (int i = 0; i < ptr_->d1; ++i) {
+        for (int j = 0; j < ptr_->d2; ++j) {
+            delete[] ptr_->arr[i][j];
         }
-        delete[] arr_[i];
+        delete[] ptr_->arr[i];
     }
-    delete[] arr_;
+    delete[] ptr_->arr;
 }
 
-M3i::M3i(const M3i& other): 
-    arr_(other.arr_), d1_(other.d1_), d2_(other.d2_), d3_(other.d3_), count_(other.count_)
+M3iImpl::M3iImpl(const M3iImpl& other): ptr_(other.ptr_)
 {
-    ++(*count_);
+    ++(ptr_->count);
 }
 
-M3i& M3i::operator=(const M3i& other) {
+M3iImpl& M3iImpl::operator=(const M3iImpl& other) {
     if (this == &other) {
         return *this;
     }
-    arr_ = other.arr_;
-    d1_ = other.d1_;
-    d2_ = other.d2_;
-    d3_ = other.d3_;
-    count_ = other.count_;
-    ++(*count_);
+    if (ptr_->count == 1) {
+        Clear();
+    }
+    ptr_ = other.ptr_;
+    ++(ptr_->count);
     return *this;
 }
  
-M3i::M3i(M3i&& other): 
-    arr_(other.arr_), d1_(other.d1_), d2_(other.d2_), d3_(other.d3_), count_(other.count_) {
-    other.arr_ = nullptr;
-    other.d1_ = nullptr;
-    other.d2_ = nullptr;
-    other.d3_ = nullptr;
-    other.count_ = nullptr;
+M3iImpl::M3iImpl(M3iImpl&& other): 
+    ptr_(other.ptr_) 
+{
+    other.ptr_ = nullptr;
 }
 
-M3i& M3i::operator=(M3i&& other) {
+M3iImpl& M3iImpl::operator=(M3iImpl&& other) {
     if (this == &other) {
         return *this;
     }
-    clear();
-    arr_ = other.arr_;
-    other.arr_ = nullptr;
-    count_ = other.count_;
-    other.count_ = nullptr;
-    d1_ = other.d1_;
-    d2_ = other.d2_;
-    d3_ = other.d3_;
+    if (ptr_->count == 1) {
+        Clear();
+    }
+    ptr_ = other.ptr_;
+    other.ptr_ = nullptr;
     return *this;
 }
 
-M3i::~M3i() {
-    if (--(*count_) == 0) {
-        clear();
-        delete d1_;
-        delete d2_;
-        delete d3_;
-        delete count_;
+M3iImpl::~M3iImpl() {
+    if (ptr_) {
+        if (--(ptr_->count) == 0) {
+            Clear();
+        }
+        ptr_ = nullptr;
     }
 }
 
-int& M3i::at(int i, int j, int k) {
-    return arr_[i][j][k];
+int& M3iImpl::At(int i, int j, int k) {
+    return ptr_->arr[i][j][k];
 }
     
-int M3i::at(int i, int j, int k) const {
-    return arr_[i][j][k];
+int M3iImpl::At(int i, int j, int k) const {
+    return ptr_->arr[i][j][k];
 }
 
-M3i M3i::clone() const {
-    M3i copy(*d1_, *d2_, *d3_);
-    for (int i = 0; i < *d1_; ++i) {
-        for (int j = 0; j < *d2_; ++j) {
-            for (int k = 0; k < *d3_; ++k) {
-                copy.at(i, j, k) = arr_[i][j][k];
+M3iImpl M3iImpl::Clone() const {
+    M3iImpl copy(ptr_->d1, ptr_->d2, ptr_->d3);
+    for (int i = 0; i < ptr_->d1; ++i) {
+        for (int j = 0; j < ptr_->d2; ++j) {
+            for (int k = 0; k < ptr_->d3; ++k) {
+                copy.At(i, j, k) = ptr_->arr[i][j][k];
             }
         }
     }
     return copy;
 }
 
-M3i& M3i::resize(int d1, int d2, int d3) {
+M3iImpl& M3iImpl::Resize(int d1, int d2, int d3) {
     int*** new_arr;
-    initialize(new_arr, d1, d2, d3);
-    for (int i = 0; i < min(*d1_, d1); ++i) {
-        for (int j = 0; j < min(*d2_, d2); ++j) {
-            for (int k = 0; k < min(*d3_, d3); ++k) {              
-                new_arr[i][j][k] = arr_[i][j][k];
+    Initialize(new_arr, d1, d2, d3);
+    for (int i = 0; i < min(ptr_->d1, d1); ++i) {
+        for (int j = 0; j < min(ptr_->d2, d2); ++j) {
+            for (int k = 0; k < min(ptr_->d3, d3); ++k) {              
+                new_arr[i][j][k] = ptr_->arr[i][j][k];
             }
         }
     }
-    clear();
-    arr_ = new_arr;
-    delete d1_;
-    delete d2_;
-    delete d3_;
-    d1_ = new int(d1);
-    d2_ = new int(d2);
-    d3_ = new int(d3);
+    Clear();
+    Initialize(ptr_->arr, d1, d2, d3);
+    for (int i = 0; i < d1; ++i) {
+        for (int j = 0; j < d2; ++j) {
+            for (int k = 0; k < d3; ++k) {              
+                ptr_->arr[i][j][k] = new_arr[i][j][k];
+            }
+        }
+    }
+    ptr_->d1 = d1;
+    ptr_->d2 = d2;
+    ptr_->d3 = d3;
     return *this;
 }
 
-int M3i::size(int dim) const {
+int M3iImpl::Size(int dim) const {
     if (dim == 0) {
-        return *d1_;
+        return ptr_->d1;
     } else if (dim == 1) {
-        return *d2_;
+        return ptr_->d2;
+    } else if (dim == 2) {
+        return ptr_->d3;
     }
-    return *d3_;
+    throw std::out_of_range("dim should be 0, 1 or 2");
 }
 
-void M3i::fill(int val) {
-    for(int i = 0; i < *d1_; ++i) {
-        for(int j = 0; j < *d2_; ++j) {
-            for (int k = 0; k < *d3_; ++k) {
-                arr_[i][j][k] == val;
+void M3iImpl::Fill(int val) {
+    for(int i = 0; i < ptr_->d1; ++i) {
+        for(int j = 0; j < ptr_->d2; ++j) {
+            for (int k = 0; k < ptr_->d3; ++k) {
+                ptr_->arr[i][j][k] = val;
             }
         }
     }
 }
 
 
-std::ostream& operator<<(std::ostream& ostrm, const M3i& m) {
-    for(int i = 0; i < m.size(0); ++i) {
-        for(int j = 0; j < m.size(1); ++j) {
-            for (int k = 0; k < m.size(2); ++k) {
-                ostrm << m.at(i, j, k) << " ";
+std::ostream& operator<<(std::ostream& ostrm, const M3iImpl& m) {
+    for(int i = 0; i < m.Size(0); ++i) {
+        for(int j = 0; j < m.Size(1); ++j) {
+            for (int k = 0; k < m.Size(2); ++k) {
+                ostrm << m.At(i, j, k) << " ";
             }
             ostrm << std::endl;
         }
         ostrm << std::endl;
     }
     return ostrm;
+}
+
+
+
+M3i::M3i(int d1, int d2, int d3): impl_(d1, d2, d3) {}
+
+M3i::M3i(const il3int& list): impl_(list) {}
+
+M3i::M3i(const M3i& other) {
+    mutex_ = other.mutex_;
+    LockGuardMutex lock(*mutex_);
+    impl_ = other.impl_;
+}
+
+M3i& M3i::operator=(const M3i& other) {
+    mutex_ = other.mutex_;
+    LockGuardMutex lock(*mutex_);
+    impl_ = other.impl_;
+    return *this;
+}
+
+M3i::M3i(M3i&& other) {
+    mutex_ = std::move(other.mutex_);
+    LockGuardMutex lock(*mutex_);
+    impl_ = std::move(other.impl_);
+}
+
+M3i& M3i::operator=(M3i&& other) {
+    mutex_ = std::move(other.mutex_);
+    LockGuardMutex lock(*mutex_);
+    impl_ = std::move(other.impl_);
+    return *this;
+}
+
+M3i::M3i(M3iImpl impl): impl_(std::move(impl)) {}
+
+M3i M3i::Clone() const {
+    LockGuardMutex lock(*mutex_);
+    return M3i(std::move(impl_.Clone()));
+}
+
+M3i& M3i::Resize(int d1, int d2, int d3) {
+    LockGuardMutex lock(*mutex_);
+    impl_.Resize(d1, d2, d3);
+    return *this;
+}
+
+int& M3i::At(int i, int j, int k) {
+    // пользователь сам должен отвечать за безопасность здесь
+    return impl_.At(i, j, k);
+}
+int M3i::At(int i, int j, int k) const {
+    return impl_.At(i, j, k);
+}
+
+int M3i::Size(int dim) const {
+    LockGuardMutex lock(*mutex_);
+    return impl_.Size(dim);
+}
+
+void M3i::Fill(int val) {
+    LockGuardMutex lock(*mutex_);
+    impl_.Fill(val);
+}
+
+std::ostream& M3i::WriteTo(std::ostream& ostrm) const {
+    LockGuardMutex lock(*mutex_);
+	ostrm << impl_;
+	return ostrm;
+}
+
+std::ostream& operator<<(std::ostream& ostrm, const M3i& m) {
+    return m.WriteTo(ostrm);
 }
