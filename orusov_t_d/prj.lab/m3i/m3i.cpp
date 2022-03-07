@@ -178,6 +178,7 @@ void M3iImpl::Fill(int val) {
 
 
 std::ostream& operator<<(std::ostream& ostrm, const M3iImpl& m) {
+    ostrm << "size: " << m.Size(0) << " " << m.Size(1) << " " << m.Size(2) << std::endl;
     for(int i = 0; i < m.Size(0); ++i) {
         for(int j = 0; j < m.Size(1); ++j) {
             for (int k = 0; k < m.Size(2); ++k) {
@@ -190,7 +191,23 @@ std::ostream& operator<<(std::ostream& ostrm, const M3iImpl& m) {
     return ostrm;
 }
 
-
+std::istream& operator>>(std::istream& istrm, details::M3iImpl& m) {
+    int d1;
+    int d2;
+    int d3;
+    istrm >> d1 >> d2 >> d3;
+    m = M3iImpl(d1, d2, d3);
+    for(int i = 0; i < d1; ++i) {
+        for(int j = 0; j < d2; ++j) {
+            for (int k = 0; k < d3; ++k) {
+                int number;
+                istrm >> number;
+                m.At(i, j, k) = number;
+            }
+        }
+    }
+    return istrm;
+}
 
 M3i::M3i(int d1, int d2, int d3): impl_(d1, d2, d3) {}
 
@@ -261,4 +278,14 @@ std::ostream& M3i::WriteTo(std::ostream& ostrm) const {
 
 std::ostream& operator<<(std::ostream& ostrm, const M3i& m) {
     return m.WriteTo(ostrm);
+}
+
+std::istream& M3i::ReadFrom(std::istream& istrm) {
+    LockGuardMutex lock(*mutex_);
+    istrm >> impl_;
+    return istrm;
+}
+
+std::istream& operator>>(std::istream& istrm, M3i& m) {
+    return m.ReadFrom(istrm);
 }
