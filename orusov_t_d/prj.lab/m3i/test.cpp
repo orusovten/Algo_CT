@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <string>
-#include <doctest/doctest.h.
+#include <doctest/doctest.h>
 #include <m3i/m3i.h>
 #include <sstream>
 
