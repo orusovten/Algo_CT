@@ -55,7 +55,7 @@ namespace details {
     };
 }
 
-std::istream& operator>>(std::istream& istrm, details::M3iImpl& m);
+std::istream& operator>>(std::istream& istrm, details::M3iImpl& m); // done
 std::ostream& operator<<(std::ostream& ostrm, const details::M3iImpl& m); // done
 
 class M3i {
@@ -91,13 +91,14 @@ public:
     void Fill(int val); // done
 
     std::ostream& WriteTo(std::ostream& ostrm) const; // done
+    std::istream& ReadFrom(std::istream& istrm); // done
 private:
     explicit M3i(details::M3iImpl impl);
     details::M3iImpl impl_;
     std::shared_ptr<std::mutex> mutex_ = std::make_shared<std::mutex>();
 };
 
-std::istream& operator>>(std::istream& istrm, M3i& m);
+std::istream& operator>>(std::istream& istrm, M3i& m); // done
 std::ostream& operator<<(std::ostream& ostrm, const M3i& m); // done
 
 #endif // #define M3i_HEAD_H_2022_03_03
