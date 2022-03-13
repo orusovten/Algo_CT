@@ -44,6 +44,15 @@ TEST_CASE("init")
             }
         }
     }
+    SUBCASE("invalid init")
+    {
+        CHECK_THROWS({M3i m3i(-1, 2, 3);});
+        CHECK_THROWS({M3i m3i(1, -2, 3);});
+        CHECK_THROWS({M3i m3i(1, 2, -3);});
+        CHECK_THROWS({M3i m3i(0, 2, 3);});
+        CHECK_THROWS({M3i m3i(1, 0, 3);});
+        CHECK_THROWS({M3i m3i(1, 2, 0);});
+    }
     SUBCASE("copy")
     {
         int d1 = 2;
@@ -86,22 +95,36 @@ TEST_CASE("init")
 
 TEST_CASE("resize")
 {
-    M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
-    M3i copy = m3i;
-    m3i.Resize(3, 1, 5);
-    CHECK(m3i.Size(0) == 3);
-    CHECK(m3i.Size(1) == 1);
-    CHECK(m3i.Size(2) == 5);
-    // то, что должно получиться после Resize
-    M3i right_resized_m3i = {{{1, 2, 3, 0, 0}}, {{7, 8, 9, 0, 0}}, {{0, 0, 0, 0, 0}}};
-    for (int i = 0; i < m3i.Size(0); ++i) {
-        for (int j = 0; j < m3i.Size(1); ++j) {
-            for (int k = 0; k < m3i.Size(2); ++k) {
-                CHECK(m3i.At(i, j, k) == right_resized_m3i.At(i, j, k));
+    SUBCASE("normal") 
+    {
+        M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+        M3i copy = m3i;
+        m3i.Resize(3, 1, 5);
+        CHECK(m3i.Size(0) == 3);
+        CHECK(m3i.Size(1) == 1);
+        CHECK(m3i.Size(2) == 5);
+        // то, что должно получиться после Resize
+        M3i right_resized_m3i = {{{1, 2, 3, 0, 0}}, {{7, 8, 9, 0, 0}}, {{0, 0, 0, 0, 0}}};
+        for (int i = 0; i < m3i.Size(0); ++i) {
+            for (int j = 0; j < m3i.Size(1); ++j) {
+                for (int k = 0; k < m3i.Size(2); ++k) {
+                    CHECK(m3i.At(i, j, k) == right_resized_m3i.At(i, j, k));
+                }
             }
         }
+        CHECK(copy == m3i);
     }
-    CHECK(copy == m3i);
+    
+    SUBCASE("invalid")
+    {
+        M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+        CHECK_THROWS({m3i.Resize(-1, 2, 3);});
+        CHECK_THROWS({m3i.Resize(1, -2, 3);});
+        CHECK_THROWS({m3i.Resize(1, 2, -3);});
+        CHECK_THROWS({m3i.Resize(0, 2, 3);});
+        CHECK_THROWS({m3i.Resize(1, 0, 3);});
+        CHECK_THROWS({m3i.Resize(1, 2, 0);});
+    }
 }
 
 TEST_CASE("fill")
@@ -149,4 +172,8 @@ TEST_CASE("input/output") {
             }
         }
     }
+}
+
+TEST_CASE("multi-thread") {
+    
 }
