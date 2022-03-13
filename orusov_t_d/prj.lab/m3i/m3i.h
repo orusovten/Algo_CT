@@ -46,7 +46,7 @@ namespace details {
             int d1; // измерение 1
             int d2; // измерение 2
             int d3; // измерение 3
-            int count; // кол-во ссылок
+            int count; // кол-во ссылок do atomic
             SharedPtr(int*** arr, int d1, int d2, int d3, int count): 
                 arr(arr), d1(d1), d2(d2), d3(d3), count(count)
             {}
