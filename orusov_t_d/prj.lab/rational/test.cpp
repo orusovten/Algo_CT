@@ -99,21 +99,19 @@ TEST_CASE("input/output") {
     CHECK(str_number == "5/3");
 }
 
-void ZeroDenominatorInput() {
-    Rational number;
-    std::stringstream input_stream;
-    input_stream << "15/0";
-    input_stream >> number;
-}
-
-void InvalidInput() {
-    Rational number;
-    std::stringstream input_stream;
-    input_stream << "15rd2";
-    input_stream >> number;
-}
-
 TEST_CASE("invalid input") {
-    CHECK_THROWS(ZeroDenominatorInput());
-    CHECK_THROWS(InvalidInput());
+    SUBCASE("zero denominator") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "15/0";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("not rational") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "15rd2";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
 }
