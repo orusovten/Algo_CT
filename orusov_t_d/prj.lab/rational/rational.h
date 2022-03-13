@@ -9,7 +9,6 @@
 class Rational {
 public:
     class NullDenomException : public std::exception {};
-    class InvalidInputException : public std::exception {};
 	Rational() = default;
 	Rational(const Rational& other) = default;
 	Rational(Rational&& other) = default;
