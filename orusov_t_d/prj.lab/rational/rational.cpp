@@ -136,7 +136,10 @@ std::istream& Rational::read_from(std::istream& istrm) {
 	char c;
 	int numerator;
 	int denominator;
-	istrm >> numerator >> std::noskipws >> c >> std::skipws >> denominator;
+	istrm >> numerator >> std::noskipws >> c >> denominator >> std::skipws;
+	if (istrm.rdstate() == std::ios_base::failbit) {
+		return istrm;
+	}
 	if (c != '/' || denominator <= 0) {
 		istrm.setstate(std::ios_base::failbit);
 		return istrm;
