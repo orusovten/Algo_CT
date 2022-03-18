@@ -107,11 +107,53 @@ TEST_CASE("invalid input") {
         input_stream >> number;
         CHECK(input_stream.fail());
     }
-    SUBCASE("not rational") {
+    SUBCASE("fail_1") {
         Rational number;
         std::stringstream input_stream;
-        input_stream << "15rd2";
+        input_stream << "15d2";
         input_stream >> number;
         CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_2") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "15 2";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_3") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "12/-12";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_4") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "15/ 2";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_5") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "15 /2";
+        input_stream >> number;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("eof") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "12/5";
+        input_stream >> number;
+        CHECK(input_stream.eof());
+    }
+    SUBCASE("good") {
+        Rational number;
+        std::stringstream input_stream;
+        input_stream << "12/5 ";
+        input_stream >> number;
+        CHECK(input_stream.good());
     }
 }
