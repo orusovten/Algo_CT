@@ -15,24 +15,16 @@ M3iImpl::M3iImpl() : ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
 {
 }
 
-void M3iImpl::Initialize(int ***&arr, int d1, int d2, int d3)
+void M3iImpl::Initialize(int*& arr, int d1, int d2, int d3)
 {
     if (d1 <= 0 || d2 <= 0 || d3 <= 0)
     {
         throw std::invalid_argument("dimensions must be positive");
     }
-    arr = new int **[d1];
-    for (int i = 0; i < d1; ++i)
+    arr = new int[d1 * d2 * d3];
+    for (int i = 0; i < d1 * d2 * d3; ++i)
     {
-        arr[i] = new int *[d2];
-        for (int j = 0; j < d2; ++j)
-        {
-            arr[i][j] = new int[d3];
-            for (int k = 0; k < d3; ++k)
-            {
-                arr[i][j][k] = int();
-            }
-        }
+        arr[i] = int();
     }
 }
 
@@ -59,7 +51,7 @@ M3iImpl::M3iImpl(const il3int &list) : ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
             k = 0;
             for (const auto &elem : subsublist)
             {
-                ptr_->arr[i][j][k] = elem;
+                ptr_->arr[i * ptr_->d2 * ptr_->d3 + j * ptr_->d3 + k] = elem;
                 ++k;
             }
             ++j;
@@ -70,14 +62,6 @@ M3iImpl::M3iImpl(const il3int &list) : ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
 
 void M3iImpl::Clear()
 {
-    for (int i = 0; i < ptr_->d1; ++i)
-    {
-        for (int j = 0; j < ptr_->d2; ++j)
-        {
-            delete[] ptr_->arr[i][j];
-        }
-        delete[] ptr_->arr[i];
-    }
     delete[] ptr_->arr;
 }
 
@@ -86,7 +70,7 @@ M3iImpl::M3iImpl(const M3iImpl &other) : ptr_(other.ptr_)
     ptr_->count.fetch_add(1);
 }
 
-M3iImpl &M3iImpl::operator=(const M3iImpl &other)
+M3iImpl& M3iImpl::operator=(const M3iImpl& other)
 {
     if (this == &other)
     {
@@ -101,12 +85,12 @@ M3iImpl &M3iImpl::operator=(const M3iImpl &other)
     return *this;
 }
 
-M3iImpl::M3iImpl(M3iImpl &&other) : ptr_(other.ptr_)
+M3iImpl::M3iImpl(M3iImpl&& other) : ptr_(other.ptr_)
 {
     other.ptr_ = nullptr;
 }
 
-M3iImpl &M3iImpl::operator=(M3iImpl &&other)
+M3iImpl &M3iImpl::operator=(M3iImpl&& other)
 {
     if (this == &other)
     {
@@ -134,7 +118,7 @@ M3iImpl::~M3iImpl()
     }
 }
 
-int &M3iImpl::At(int i, int j, int k)
+int& M3iImpl::At(int i, int j, int k)
 {
     int arr[3] = {i, j, k};
     for (int i = 0; i < 3; ++i)
@@ -144,7 +128,7 @@ int &M3iImpl::At(int i, int j, int k)
             throw std::out_of_range("out of dim");
         }
     }
-    return ptr_->arr[i][j][k];
+    return ptr_->arr[i * ptr_->d2 * ptr_->d3 + j * ptr_->d3 + k];
 }
 
 int M3iImpl::At(int i, int j, int k) const
@@ -157,7 +141,7 @@ int M3iImpl::At(int i, int j, int k) const
             throw std::out_of_range("out of dim");
         }
     }
-    return ptr_->arr[i][j][k];
+    return ptr_->arr[i * ptr_->d2 * ptr_->d3 + j * ptr_->d3 + k];
 }
 
 M3iImpl M3iImpl::Clone() const
@@ -169,7 +153,7 @@ M3iImpl M3iImpl::Clone() const
         {
             for (int k = 0; k < ptr_->d3; ++k)
             {
-                copy.At(i, j, k) = ptr_->arr[i][j][k];
+                copy.At(i, j, k) = ptr_->arr[i * ptr_->d2 * ptr_->d3 + j * ptr_->d3 + k];
             }
         }
     }
@@ -178,7 +162,7 @@ M3iImpl M3iImpl::Clone() const
 
 M3iImpl &M3iImpl::Resize(int d1, int d2, int d3)
 {
-    int ***new_arr;
+    int* new_arr;
     Initialize(new_arr, d1, d2, d3);
     for (int i = 0; i < min(ptr_->d1, d1); ++i)
     {
@@ -186,25 +170,25 @@ M3iImpl &M3iImpl::Resize(int d1, int d2, int d3)
         {
             for (int k = 0; k < min(ptr_->d3, d3); ++k)
             {
-                new_arr[i][j][k] = ptr_->arr[i][j][k];
+                new_arr[i * d2 * d3 + j * d3 + k] = At(i, j, k);
             }
         }
     }
     Clear();
     Initialize(ptr_->arr, d1, d2, d3);
+    ptr_->d1 = d1;
+    ptr_->d2 = d2;
+    ptr_->d3 = d3;
     for (int i = 0; i < d1; ++i)
     {
         for (int j = 0; j < d2; ++j)
         {
             for (int k = 0; k < d3; ++k)
             {
-                ptr_->arr[i][j][k] = new_arr[i][j][k];
+                At(i, j, k) = new_arr[i * d2 * d3 + j * d3 + k];
             }
         }
     }
-    ptr_->d1 = d1;
-    ptr_->d2 = d2;
-    ptr_->d3 = d3;
     return *this;
 }
 
@@ -233,7 +217,7 @@ void M3iImpl::Fill(int val)
         {
             for (int k = 0; k < ptr_->d3; ++k)
             {
-                ptr_->arr[i][j][k] = val;
+                ptr_->arr[i * ptr_->d2 * ptr_->d3 + j * ptr_->d3 + k] = val;
             }
         }
     }
@@ -296,13 +280,13 @@ M3i &M3i::operator=(const M3i &other)
     return *this;
 }
 
-M3i::M3i(M3i &&other)
+M3i::M3i(M3i&& other)
 {
     mutex_ = std::move(other.mutex_);
     impl_ = std::move(other.impl_);
 }
 
-M3i &M3i::operator=(M3i &&other)
+M3i &M3i::operator=(M3i&& other)
 {
     mutex_ = std::move(other.mutex_);
     impl_ = std::move(other.impl_);
