@@ -40,15 +40,15 @@ namespace details {
         // заполнение значениями
         void Fill(int val); // done
     private:
-        void Initialize(int***& arr, int d1, int d2, int d3); // заполнение arr значениями по умолчанию
+        void Initialize(int*& arr, int d1, int d2, int d3); // заполнение arr значениями по умолчанию
         void Clear(); // очистка данных
         struct SharedPtr {
-            int*** arr; // буфер
+            int* arr; // буфер
             int d1; // измерение 1
             int d2; // измерение 2
             int d3; // измерение 3
             std::atomic<int> count; // кол-во ссылок
-            SharedPtr(int*** arr, int d1, int d2, int d3, int count): 
+            SharedPtr(int* arr, int d1, int d2, int d3, int count): 
                 arr(arr), d1(d1), d2(d2), d3(d3), count(count)
             {}
         };
