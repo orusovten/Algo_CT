@@ -19,8 +19,8 @@ public:
 	Rational& operator= (const Rational& other) = default;
 	Rational& operator= (Rational&& other) noexcept = default;
 
-	Rational operator-() const;
-	Rational operator+() const;
+	const Rational operator-() const;
+	const Rational operator+() const;
 
 	Rational& operator+= (const Rational& other);
 	Rational& operator-= (const Rational& other);
