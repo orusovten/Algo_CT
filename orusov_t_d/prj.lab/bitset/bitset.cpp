@@ -96,7 +96,7 @@ BitSet& BitSet::operator^=(const BitSet& other) {
     return *this;
 }
 
-BitSet BitSet::operator~() const {
+const BitSet BitSet::operator~() const {
     BitSet new_bs = *this;
     for (int i = 0; i < size_ / BIT_SIZE; ++i) {
         new_bs.array_[i] = ~array_[i];
