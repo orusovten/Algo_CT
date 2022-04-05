@@ -24,7 +24,7 @@ public:
     BitSet& operator|=(const BitSet& other);
     BitSet& operator&=(const BitSet& other);
     BitSet& operator^=(const BitSet& other);
-    BitSet operator~() const;
+    const BitSet operator~() const;
 
     // метод At - деталь реализации
     bool At(const int index) const; 
