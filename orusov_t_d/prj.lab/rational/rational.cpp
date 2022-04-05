@@ -67,11 +67,11 @@ void Rational::balance() {
 	}
 }
 
-Rational Rational::operator+() const {
+const Rational Rational::operator+() const {
 	return *this;
 }
 
-Rational Rational::operator-() const {
+const Rational Rational::operator-() const {
 	return Rational(-numerator_, denominator_);
 }
 
