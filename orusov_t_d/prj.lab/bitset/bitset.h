@@ -7,8 +7,8 @@
 
 class BitSet {
 private:
-    // класс BoolHolder - деталь реализации
-    class BoolHolder;
+    // класс BitHolder - деталь реализации
+    class BitHolder;
 public:
     BitSet() = default;
     BitSet(const BitSet& other) = default;
@@ -19,23 +19,29 @@ public:
     BitSet(const int size, const bool val = false);
     int Size() const;
     void Resize(const int size);
+    void Fill(const bool val); // not done
     bool operator[](const int index) const;
-    BoolHolder operator[](const int index);
+    BitHolder operator[](const int index);
     BitSet& operator|=(const BitSet& other);
     BitSet& operator&=(const BitSet& other);
     BitSet& operator^=(const BitSet& other);
     const BitSet operator~() const;
-
-    // метод At - деталь реализации
-    bool At(const int index) const; 
-    // BoolHolder At(const int index);
 private:
-    // класс BoolHolder - деталь реализации
-    class BoolHolder {
-        BoolHolder& operator=(const BoolHolder& other);
+    // класс BitHolder - деталь реализации
+    class BitHolder {
+        public:
+            BitHolder(BitSet& bs, int index);
+            BitHolder(const BitHolder& other) = default;
+            BitHolder(BitHolder&& other) = default;
+            ~BitHolder() = default;
+            BitHolder& operator=(const BitHolder& other) = default;
+            BitHolder& operator=(BitHolder&& other) = default;
+            BitHolder& operator=(const bool val);
+            operator bool() const;
         private:
-            BoolHolder();
-            unsigned char* ptr_;
+            BitHolder();
+            BitSet& bs_;
+            int index_;
     };
     std::vector<uint16_t> array_; 
     int size_ = 0;
@@ -47,5 +53,6 @@ const BitSet operator& (const BitSet& left, const BitSet& right);
 const BitSet operator| (const BitSet& left, const BitSet& right);
 
 std::ostream& operator<<(std::ostream& ostrm, const BitSet& bs);
+std::istream& operator<<(std::istream& istrm, BitSet& bs);
 
 #endif // #define BITSET_HEAD_H_2022_03_29
