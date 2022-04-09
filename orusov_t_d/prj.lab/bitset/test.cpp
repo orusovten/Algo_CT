@@ -209,3 +209,64 @@ TEST_CASE("operators") {
         CHECK(first == result);
     }
 }   
+
+TEST_CASE("input/output") {
+    SUBCASE("good input/output") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "11111111000011110011";
+        input_stream >> bitset;
+        BitSet right_bitset(20, true);
+        for (auto i : {8, 9, 10, 11, 16, 17}) {
+            right_bitset[i] = false;
+        }
+        CHECK(bitset == right_bitset);
+        std::stringstream output_stream;
+        output_stream << bitset;
+        std::string str_bitset;
+        output_stream >> str_bitset;
+        CHECK(str_bitset == "11111111000011110011");
+    }
+    SUBCASE("empty input") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "";
+        input_stream >> bitset;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_1") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "10101010410101";
+        input_stream >> bitset;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_2") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "10000100011ervnjh1123";
+        input_stream >> bitset;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail_3") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "111r000001";
+        input_stream >> bitset;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("eof") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "101010010111";
+        input_stream >> bitset;
+        CHECK(input_stream.eof());
+    }
+    SUBCASE("good") {
+        BitSet bitset;
+        std::stringstream input_stream;
+        input_stream << "11110000111101 ";
+        input_stream >> bitset;
+        CHECK(input_stream.good());
+    }
+}
