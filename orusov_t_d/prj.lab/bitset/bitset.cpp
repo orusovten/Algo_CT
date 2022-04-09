@@ -170,7 +170,10 @@ std::istream& operator>>(std::istream& istrm, BitSet& bs) {
         if (bs_str[i] == '1') {
             bs[i] = true;
         }
-        else if (bs_str[i] != '0') {
+        else if (bs_str[i] == '0') {
+            // по умолчанию и так стоит false
+        }
+        else {
             istrm.setstate(std::ios_base::failbit);
             return istrm; 
         }
