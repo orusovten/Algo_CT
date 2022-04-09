@@ -53,6 +53,6 @@ const BitSet operator& (const BitSet& left, const BitSet& right);
 const BitSet operator| (const BitSet& left, const BitSet& right);
 
 std::ostream& operator<<(std::ostream& ostrm, const BitSet& bs);
-std::istream& operator<<(std::istream& istrm, BitSet& bs);
+std::istream& operator>>(std::istream& istrm, BitSet& bs);
 
 #endif // #define BITSET_HEAD_H_2022_03_29
