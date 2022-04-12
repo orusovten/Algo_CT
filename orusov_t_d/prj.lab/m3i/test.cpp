@@ -12,9 +12,9 @@ bool operator== (const M3i& left, const M3i& right) {
                                             (left.Size(2) != right.Size(2))) {
         return false;
     }
-    for(int i = 0; i < left.Size(0); ++i) {
-        for(int j = 0; j < left.Size(1); ++j) {
-            for(int k = 0; k < left.Size(2); ++k) {
+    for( int i = 0; i < left.Size(0); ++i) {
+        for( int j = 0; j < left.Size(1); ++j) {
+            for (int k = 0; k < left.Size(2); ++k) {
                 if (left.At(i, j, k) != right.At(i, j, k)) {
                     return false;
                 }                
@@ -36,9 +36,9 @@ TEST_CASE("init")
         CHECK(m3i.Size(1) == d2);
         CHECK(m3i.Size(2) == d3);
         CHECK_THROWS(m3i.Size(3));
-        for(int i = 0; i < d1; ++i) {
-            for(int j = 0; j < d2; ++j) {
-                for(int k = 0; k < d3; ++k) {
+        for (int i = 0; i < d1; ++i) {
+            for( int j = 0; j < d2; ++j) {
+                for (int k = 0; k < d3; ++k) {
                     CHECK(m3i.At(i, j, k) == int());
                 }
             }
@@ -145,7 +145,7 @@ TEST_CASE("fill")
 TEST_CASE("input/output") {
     M3i m3i;
     std::stringstream input_stream;
-    input_stream << "2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+    input_stream << "size: 2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
     input_stream >> m3i;
     M3i right_m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
     CHECK(m3i == right_m3i);
@@ -173,6 +173,46 @@ TEST_CASE("input/output") {
         }
     }
 }
+
+TEST_CASE("bad input/output") {
+    SUBCASE("fail 1") {
+        M3i m3i;
+        std::stringstream input_stream;
+        input_stream << "sie: 2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+        input_stream >> m3i;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail 2") {
+        M3i m3i;
+        std::stringstream input_stream;
+        input_stream << "size 2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+        input_stream >> m3i;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail 3") {
+        M3i m3i;
+        std::stringstream input_stream;
+        input_stream << "2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+        input_stream >> m3i;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("fail 4") {
+        M3i m3i;
+        std::stringstream input_stream;
+        input_stream << "size: 2 2 r\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+        input_stream >> m3i;
+        CHECK(input_stream.fail());
+    }
+    SUBCASE("good") {
+        M3i m3i;
+        std::stringstream input_stream;
+        input_stream << "size: 2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+        input_stream >> m3i;
+        CHECK(input_stream.good());
+    }
+}
+
+
 
 TEST_CASE("multi-thread") {
     
