@@ -1,6 +1,7 @@
 #include <m3i/m3i.h>
 #include <stdexcept>
 #include <exception>
+#include <iostream>
 
 using namespace details;
 
@@ -243,10 +244,20 @@ std::ostream &operator<<(std::ostream &ostrm, const M3iImpl &m)
 
 std::istream &operator>>(std::istream &istrm, details::M3iImpl &m)
 {
+    std::string str_size;
+    istrm >> str_size;
+    if (istrm.rdstate() == std::ios_base::failbit || str_size != "size:") {
+        istrm.setstate(std::ios_base::failbit);
+        return istrm;
+    }
     int d1;
     int d2;
     int d3;
     istrm >> d1 >> d2 >> d3;
+    if (istrm.rdstate() == std::ios_base::failbit || d1 <= 0 || d2 <= 0 || d3 <= 0) {
+        istrm.setstate(std::ios_base::failbit);
+        return istrm;
+    }
     m = M3iImpl(d1, d2, d3);
     for (int i = 0; i < d1; ++i)
     {
@@ -256,6 +267,9 @@ std::istream &operator>>(std::istream &istrm, details::M3iImpl &m)
             {
                 int number;
                 istrm >> number;
+                if (istrm.rdstate() == std::ios_base::failbit) {
+                    return istrm;
+                }
                 m.At(i, j, k) = number;
             }
         }
