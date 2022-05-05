@@ -16,7 +16,7 @@ M3iImpl::M3iImpl() : ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
 {
 }
 
-void M3iImpl::Initialize(int*& arr, int d1, int d2, int d3)
+void M3iImpl::Initialize(int*& arr, int d1, int d2, int d3, int value = int())
 {
     if (d1 <= 0 || d2 <= 0 || d3 <= 0)
     {
@@ -25,13 +25,18 @@ void M3iImpl::Initialize(int*& arr, int d1, int d2, int d3)
     arr = new int[d1 * d2 * d3];
     for (int i = 0; i < d1 * d2 * d3; ++i)
     {
-        arr[i] = int();
+        arr[i] = value;
     }
 }
 
 M3iImpl::M3iImpl(int d1, int d2, int d3) : ptr_(new SharedPtr(nullptr, d1, d2, d3, 1))
 {
     Initialize(ptr_->arr, ptr_->d1, ptr_->d2, ptr_->d3);
+}
+
+M3iImpl::M3iImpl(int d1, int d2, int d3, int value) : ptr_(new SharedPtr(nullptr, d1, d2, d3, 1))
+{
+    Initialize(ptr_->arr, ptr_->d1, ptr_->d2, ptr_->d3, value);
 }
 
 M3iImpl::M3iImpl(const il3int &list) : ptr_(new SharedPtr(nullptr, 0, 0, 0, 0))
@@ -278,6 +283,8 @@ std::istream &operator>>(std::istream &istrm, details::M3iImpl &m)
 }
 
 M3i::M3i(int d1, int d2, int d3) : impl_(d1, d2, d3) {}
+
+M3i::M3i(int d1, int d2, int d3, int value) : impl_(d1, d2, d3, value) {}
 
 M3i::M3i(const il3int &list) : impl_(list) {}
 
