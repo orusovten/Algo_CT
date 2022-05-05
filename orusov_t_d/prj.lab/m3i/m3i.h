@@ -2,7 +2,7 @@
 #ifndef M3i_HEAD_H_2022_03_03
 #define M3i_HEAD_H_2022_03_03
 
-#include <iostream>
+#include <iosfwd>
 #include <memory>
 #include <initializer_list>
 #include <mutex>
@@ -14,6 +14,7 @@ namespace details {
     public:
         M3iImpl(); // done
         M3iImpl(int d1, int d2, int d3); // done
+        M3iImpl(int d1, int d2, int d3, int value); // done
         // мой вариант конструктора от std::Initializer_list
         M3iImpl(const il3int& list); // done
         // легкая копия(подсчет ссылок)
@@ -40,7 +41,7 @@ namespace details {
         // заполнение значениями
         void Fill(int val); // done
     private:
-        void Initialize(int*& arr, int d1, int d2, int d3); // заполнение arr значениями по умолчанию
+        void Initialize(int*& arr, int d1, int d2, int d3, int value); // заполнение arr значениями по умолчанию
         void Clear(); // очистка данных
         struct SharedPtr {
             int* arr; // буфер
@@ -65,6 +66,7 @@ private:
 public:
     M3i() = default; // done
     M3i(int d1, int d2, int d3); // done
+    M3i(int d1, int d2, int d3, int value); // done
     // мой вариант конструктора от std::Initializer_list
     M3i(const il3int& list); // done
     // легкая копия(подсчет ссылок)
