@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
-#include <external/externalpolyhedronautomata.h>
+#include <externalpolyhedronautomata/externalpolyhedronautomata.h>
+
 
 TEST_CASE("Determinant") {
     Point a(0, 0, 0);
@@ -84,11 +85,19 @@ bool IsConvex(const std::set<Point>& points, const std::vector<Plane>& faces) {
     return true;
 }
 
+int GetRandomNumber(int min, int max)
+{
+  int num = min + std::rand() % (max - min + 1);
+  return num;
+}
+
 void GenerateRandomPoints(std::set<Point>& points, int count) {
+    int min = -10000;
+    int max = 10000;
     for (int i = 0; i < count; ++i) {
-        int x = std::rand();
-        int y = std::rand();
-        int z = std::rand();
+        int x = GetRandomNumber(min, max);
+        int y = GetRandomNumber(min, max);
+        int z = GetRandomNumber(min, max);
         points.emplace(x, y, z);
     }
 }
