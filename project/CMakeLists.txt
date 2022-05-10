@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 14)
+
+project(orusov_final_project_SE)
+add_library(externalpolyhedronautomata externalpolyhedronautomata.h externalpolyhedronautomata.cpp)
+add_executable(externalpolyhedronautomata_test test.cpp)
+target_link_libraries(externalpolyhedronautomata_test externalpolyhedronautomata)
