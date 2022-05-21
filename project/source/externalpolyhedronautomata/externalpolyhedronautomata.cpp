@@ -126,9 +126,9 @@ std::set<Point> ExternalPolyhedronAutomata::GetPoints() const {
   return points_;
 }
 
-bool IsFirstMoreNearForBeingSecondOrThirdPoint(const Point& first,
+bool ExternalPolyhedronAutomata::IsFirstMoreNearForBeingSecondOrThirdPoint(const Point& first,
                                                const Point& second,
-                                               const Plane& plane) {
+                                               const Plane& plane) const {
   Vector normal = VectorMultiply(plane.first_vec_, plane.second_vec_);
   Vector first_normal = VectorMultiply(Vector(first, plane.first_vec_.Start()),
                                        Vector(first, plane.first_vec_.End()));
@@ -155,8 +155,8 @@ bool IsInSameHalfSpace(const Point& first, const Point& second,
          (first_determinant <= 0 && second_determinant <= 0);
 }
 
-bool IsFirstMoreNear(const Point& first, const Point& second,
-                     const Plane& plane) {
+bool ExternalPolyhedronAutomata::IsFirstMoreNear(const Point& first, const Point& second,
+                     const Plane& plane) const {
   Vector normal = VectorMultiply(plane.first_vec_, plane.second_vec_);
   Vector first_normal = VectorMultiply(Vector(first, plane.first_vec_.Start()),
                                        Vector(first, plane.first_vec_.End()));
