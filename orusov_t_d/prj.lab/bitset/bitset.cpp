@@ -39,6 +39,22 @@ BitSet::BitSet(const int size, const bool val) {
     }
 }
 
+BitSet::BitSet(BitSet&& other): array_(other.array_), size_(other.size_) {
+    other.array_.clear();
+    other.size_ = 0;
+}
+
+BitSet& BitSet::operator=(BitSet&& other) {
+    if (this == &other) {
+        return *this;
+    }
+    array_ = other.array_;
+    size_ = other.size_;
+    other.array_.clear();
+    other.size_ = 0;
+    return *this;
+}
+
 int BitSet::Size() const {
     return size_;
 }
@@ -48,17 +64,20 @@ void BitSet::Resize(const int size) {
         throw std::invalid_argument("size should be positive");
     }
     std::vector<uint16_t> new_array = std::vector<uint16_t>(size / BIT_SIZE, 0);
+    int rest = size % BIT_SIZE;
     if (size < size_) {
         for (int i = 0; i < new_array.size(); ++i) {
             new_array[i] = array_[i];
         }
-        int rest = size % BIT_SIZE;
         if (rest > 0) {
             new_array.push_back(array_[new_array.size()] >> (BIT_SIZE - rest));
         }
     } else {
         for (int i = 0; i < array_.size(); ++i) {
             new_array[i] = array_[i];
+        }
+        if (rest > 0) {
+            new_array.push_back(0);
         }
     }
     array_ = new_array;
