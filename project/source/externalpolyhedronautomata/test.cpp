@@ -2,7 +2,6 @@
 #include <doctest/doctest.h>
 #include <externalpolyhedronautomata/externalpolyhedronautomata.h>
 
-
 TEST_CASE("Determinant") {
     Point a(0, 0, 0);
     Vector vec1(a, 1, 2, 3);
@@ -71,6 +70,34 @@ TEST_CASE("IsInSameHalfSpace") {
     CHECK_FALSE(IsInSameHalfSpace(down2, up2, plane));
     CHECK(IsInSameHalfSpace(down2, x, plane));
     CHECK(IsInSameHalfSpace(up2, x, plane));
+}
+
+class Tester : public ExternalPolyhedronAutomata {
+public:
+    Tester(const std::set<Point>& points): ExternalPolyhedronAutomata(points) { 
+    }
+    bool isFirstMoreNear(const Point& first, const Point& second, const Plane& plane) const {
+        return IsFirstMoreNear(first, second, plane);
+    }
+};
+
+TEST_CASE("IsFirstMoreNear") {
+    Point x(1, 0, 0);
+    Point y(0, 1, 0);
+    Point zero(0, 0, 0);
+    Plane plane(zero, y, x);
+    Point first(2, 0, 1);
+    Point second(1, 0, 1);
+    Point third(-1, 0, 1);
+    Point fourth(-2, 0, 1);
+    std::vector<Point> candidates = {first, second, third, fourth};
+    std::set<Point> points;
+    Tester tester(points);
+    for (int i = 0; i < candidates.size(); ++i) {
+        for (int j = i + 1; j < candidates.size(); ++j) {
+            CHECK(tester.isFirstMoreNear(candidates[j], candidates[i], plane));
+        }
+    }
 }
 
 bool IsConvex(const std::set<Point>& points, const std::vector<Plane>& faces) {
@@ -158,5 +185,3 @@ TEST_CASE("main test") {
         }
     }
 }
-
-
