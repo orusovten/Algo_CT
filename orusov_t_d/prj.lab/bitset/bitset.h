@@ -12,10 +12,10 @@ private:
 public:
     BitSet() = default;
     BitSet(const BitSet& other) = default;
-    BitSet(BitSet&& other) = default;
+    BitSet(BitSet&& other);
     ~BitSet() = default;
     BitSet& operator=(const BitSet& other) = default;
-    BitSet& operator=(BitSet&& other) = default;
+    BitSet& operator=(BitSet&& other);
     BitSet(const int size, const bool val = false);
     int Size() const;
     void Resize(const int size);
@@ -43,7 +43,7 @@ private:
             BitSet& bs_;
             int index_;
     };
-    std::vector<uint16_t> array_; 
+    std::vector<uint16_t> array_ = std::vector<uint16_t>(); 
     int size_ = 0;
     static const int BIT_SIZE = 16;
 };
