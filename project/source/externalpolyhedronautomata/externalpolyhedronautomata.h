@@ -89,6 +89,9 @@ public:
   ExternalPolyhedronAutomata(const std::set<Point>& points);
   std::vector<Plane> GetFaces() const;
   std::set<Point> GetPoints() const;
+protected:
+  bool IsFirstMoreNear(const Point& first, const Point& second,
+                     const Plane& plane) const;
 private:
   std::set<Point> points_; // точки
   std::vector<Plane> faces_;  // грани
@@ -99,6 +102,9 @@ private:
   bool IsFaceNew(const Point& point, const Vector& edge) const;
   Point FindNewFace(std::set<Point>& points, Vector& edge);
   void AddEdge(std::set<Vector, VectorComparator>& edges, Vector& edge) const;
+  bool IsFirstMoreNearForBeingSecondOrThirdPoint(const Point& first,
+                                               const Point& second,
+                                               const Plane& plane) const;
 };
 
 bool IsInSameHalfSpace(const Point& first, const Point& second,
