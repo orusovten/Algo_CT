@@ -68,11 +68,15 @@ TEST_CASE("resize") {
     SUBCASE("resize to bigger") {
         int size = 40;
         BitSet bitset(size, true);
-        int new_size = 44;
+        for (int i = 0; i < size; i += 2) {
+            bitset[i] = false;
+        }
+        BitSet old_bitset = bitset;
+        int new_size = 60;
         bitset.Resize(new_size);
         CHECK(bitset.Size() == new_size);
         for (int i = 0; i < size; ++i) {
-            CHECK(bitset[i]);
+            CHECK(bitset[i] == old_bitset[i]);
         }
         for (int i = size; i < new_size; ++i) {
             CHECK_FALSE(bitset[i]);
@@ -81,11 +85,15 @@ TEST_CASE("resize") {
     SUBCASE("resize to smaller") {
         int size = 40;
         BitSet bitset(size, true);
+        for (int i = 0; i < size; i += 2) {
+            bitset[i] = false;
+        }
+        BitSet old_bitset = bitset;
         int new_size = 22;
         bitset.Resize(new_size);
         CHECK(bitset.Size() == new_size);
         for (int i = 0; i < new_size; ++i) {
-            CHECK(bitset[i]);
+            CHECK(bitset[i] == old_bitset[i]);
         }
     }
     SUBCASE("bad resize") {
@@ -94,6 +102,16 @@ TEST_CASE("resize") {
         CHECK_THROWS(bitset.Resize(0));
         CHECK_THROWS(bitset.Resize(-1));
     }
+    SUBCASE("empty -> Resize + Fill")
+	{
+		BitSet first;
+		CHECK(first.Size() == 0);
+		first.Resize(10);
+		CHECK(first.Size() == 10);
+		first.Fill(true);
+		for(int i = 0; i < first.Size(); ++i)
+			CHECK(first[i]);
+	}
 }
 
 TEST_CASE("fill") {
