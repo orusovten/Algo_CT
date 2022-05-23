@@ -72,7 +72,7 @@ TEST_CASE("resize") {
             bitset[i] = false;
         }
         BitSet old_bitset = bitset;
-        int new_size = 60;
+        int new_size = 44;
         bitset.Resize(new_size);
         CHECK(bitset.Size() == new_size);
         for (int i = 0; i < size; ++i) {
