@@ -1,5 +1,4 @@
 #include <bitset/bitset.h>
-// #include "bitset.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -65,19 +64,19 @@ void BitSet::Resize(const int size) {
     }
     std::vector<uint16_t> new_array = std::vector<uint16_t>(size / BIT_SIZE, 0);
     int rest = size % BIT_SIZE;
-    if (size < size_) {
+    if (rest > 0) {
+        new_array.push_back(0);
+    }
+    if (new_array.size() <= array_.size()) {
         for (int i = 0; i < new_array.size(); ++i) {
             new_array[i] = array_[i];
         }
-        if (rest > 0) {
-            new_array.push_back(array_[new_array.size()] >> (BIT_SIZE - rest));
+        if (size < size_ && rest > 0) {
+            new_array[new_array.size() - 1] = (array_[new_array.size() - 1] >> (BIT_SIZE - rest));
         }
     } else {
         for (int i = 0; i < array_.size(); ++i) {
             new_array[i] = array_[i];
-        }
-        if (rest > 0) {
-            new_array.push_back(0);
         }
     }
     array_ = new_array;
